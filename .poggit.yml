@@ -1,0 +1,14 @@
+--- # Poggit-CI configuration for BlockDataExample
+
+branches:
+  - master
+
+projects:
+  BlockDataExample:
+    path: ""
+    type: plugin
+    icon: ""
+    libs:
+      - src: NhanAZ-Libraries/BlockData/BlockData
+        version: ^1.0.0
+
