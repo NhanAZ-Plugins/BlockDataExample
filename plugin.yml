@@ -1,4 +1,8 @@
-name: BlockData_Example_Plugin
-main: NhanAZ\BlockData_Example_Plugin\Main
+name: BlockDataExample
+version: 1.0.0
 api: 5.0.0
-version: 0.0.2
+main: BlockDataExample\Main
+author: NhanAZ
+description: Example plugin demonstrating BlockData virion usage
+
+depend: []
