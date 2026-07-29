@@ -5,4 +5,16 @@ main: BlockDataExample\Main
 author: NhanAZ
 description: Example plugin demonstrating BlockData virion usage
 
-depend: []
+commands:
+  inspect:
+    description: Toggle block data inspection mode
+    usage: /inspect
+    permission: blockdata.command.inspect
+
+permissions:
+  blockdata.command.inspect:
+    description: Allows the player to toggle block data inspection mode
+    default: true
+  blockdata.bypass:
+    description: Allows the player to break blocks owned by another player
+    default: op

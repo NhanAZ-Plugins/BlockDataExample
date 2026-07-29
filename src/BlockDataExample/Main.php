@@ -24,7 +24,7 @@ class Main extends PluginBase implements Listener{
 
 	protected function onEnable() : void{
 		// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-		// Setup BlockData — only ONE LINE needed!
+		// Setup BlockData - only ONE LINE needed!
 		//
 		// autoCleanup: false = handle data removal yourself (see onBlockBreak)
 		// autoCleanup: true  = auto-remove when block is broken/exploded/burned
@@ -67,7 +67,7 @@ class Main extends PluginBase implements Listener{
 			return;
 		}
 
-		// Owner is breaking their own block — clean up data
+		// Owner is breaking their own block - clean up data
 		$this->blockData->remove($block);
 		$player->sendMessage(TextFormat::GREEN . "Block data removed.");
 	}

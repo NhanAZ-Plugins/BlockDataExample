@@ -1,83 +1,89 @@
-## BlockDataExample
+# BlockDataExample
 
-A simple PocketMine-MP plugin that **shows how to use the [BlockData virion](https://github.com/NhanAZ-Libraries/BlockData)** by attaching extra information to blocks.
+A small PocketMine-MP plugin showing how to use the [BlockData virion](https://github.com/NhanAZ-Libraries/BlockData) to attach persistent information to blocks.
 
-This plugin is mainly a **demo/example**, not a full protection system.
+This is a demonstration plugin, not a complete protection system.
 
----
+## What it demonstrates
 
-### What the plugin does
+- Saving the player name and placement time when a block is placed.
+- Allowing only the owner or a player with bypass permission to break that block.
+- Toggling inspection mode with `/inspect` and viewing stored block information.
+- Building one standalone PHAR with BlockData shaded by DevTools.
 
-- **Remembers who placed a block**
-  - When a player places a block, the plugin stores:
-    - The player name
-    - The time the block was placed
-- **Only the owner can break the block**
-  - If another player tries to break it, the break is cancelled (unless they have a bypass permission).
-- **Lets you inspect block info**
-  - Players can toggle an "inspect mode" and right-click a block to see:
-    - Who placed it
-    - When it was placed
+## Download a PHAR
 
-All of this data is stored using the **BlockData** library — see the main repo:  
-`https://github.com/NhanAZ-Libraries/BlockData`
+Open the repository's [Actions page](https://github.com/NhanAZ-Plugins/BlockDataExample/actions/workflows/build.yml), select a successful run, and download its artifact. Extract the ZIP and copy `BlockDataExample.phar` to the production server's `plugins/` directory.
 
----
+The PHAR already contains a private shaded copy of BlockData. A production server does not need DevTools or a separate BlockData installation.
 
-### Requirements
+## Build on every commit
 
-- PocketMine-MP API `5.0.0` or newer
-- The **BlockData** virion (library) loaded for this plugin  
-  ([GitHub: NhanAZ-Libraries/BlockData](https://github.com/NhanAZ-Libraries/BlockData))
+The workflow at `.github/workflows/build.yml`:
 
----
+1. Checks out an exact BlockData commit into `virions/BlockData`.
+2. Sets up PocketMine PHP through the Node.js 24 compatible path.
+3. Runs `NhanAZ/DevTools@v0.1.0`.
+4. Verifies the shaded BlockData classes and LGPL license inside the PHAR.
+5. Uploads exactly one downloadable artifact for 14 days.
 
-### Installation
+PHPStan is off because the workflow intentionally omits the `phpstan` input.
 
-1. Download or build the `BlockDataExample` plugin `.phar`.
-2. Make sure the **BlockData** virion is correctly included in your server setup.
-3. Put the `.phar` file into your server `plugins` folder.
-4. Start (or restart) your PocketMine-MP server.
+The dependency declaration is kept in `devtools.yml`:
 
-If everything is correct, you should see `BlockDataExample` enabled in the console.
+```yaml
+virions:
+  - name: BlockData
+    version: ^1.0.0
+```
 
----
+## Local development with DevTools
 
-### How to use
+Install the DevTools release PHAR and use this layout:
 
-- **Place blocks**
-  - Simply place any blocks as usual. Placement info will be saved automatically.
+```text
+server/
+|- plugins/
+|  |- DevTools.phar
+|  `- BlockDataExample/
+|- virions/
+|  `- BlockData/
+`- build/
+```
 
-- **Inspect block data**
-  - As a player, run:
+Restart the server, then run:
 
-    ```text
-    /inspect
-    ```
+```text
+/devtools virions
+/devtools doctor BlockDataExample
+/devtools build BlockDataExample
+```
 
-  - You will see a message saying inspect mode is enabled.
-  - Right-click a block:
-    - If it has data, you will see the owner name and placed time.
-    - If not, it will say the block has no data.
+The result is `build/BlockDataExample.phar`.
 
-- **Break blocks**
-  - The block can only be broken by its owner (or players with the bypass permission).
+## Usage
 
----
+Place a block to save its owner and placement time. Run `/inspect`, then right-click a block to display its saved data. Run `/inspect` again to disable inspection mode.
 
-### Permissions
+Only the recorded owner may break a tracked block unless the player has `blockdata.bypass`.
 
-- `blockdata.bypass`  
-  Allows a player to break blocks regardless of who placed them.
+## Permissions
 
-You can give this permission to admins or trusted staff if you want them to ignore ownership checks.
+| Permission | Default | Purpose |
+| --- | --- | --- |
+| `blockdata.command.inspect` | Everyone | Use `/inspect`. |
+| `blockdata.bypass` | Operator | Break blocks owned by another player. |
 
----
+## Source integration
 
-### Notes
+The complete integration is in `src/BlockDataExample/Main.php`. The essential setup is:
 
-- This plugin is intentionally small and simple so you can:
-  - Read the code easily (see `src/BlockDataExample/Main.php`).
-  - Learn how to integrate and use the **BlockData** virion in your own plugins.
-  - Compare with the official **BlockData** documentation here: `https://github.com/NhanAZ-Libraries/BlockData`
+```php
+use NhanAZ\BlockData\BlockData;
 
+protected function onEnable() : void{
+    $this->blockData = BlockData::create($this, autoCleanup: false);
+}
+```
+
+See the [BlockData documentation](https://github.com/NhanAZ-Libraries/BlockData) for the complete API.

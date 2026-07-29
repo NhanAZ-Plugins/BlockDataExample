@@ -1,0 +1,76 @@
+name: Build
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: build-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Validate and build PHAR with DevTools
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Check out BlockDataExample
+        uses: actions/checkout@v7.0.1
+
+      - name: Check out pinned BlockData virion
+        uses: actions/checkout@v7.0.1
+        with:
+          repository: NhanAZ-Libraries/BlockData
+          ref: f822980c2652026394e2a48829b4e13df1e4ded5
+          path: virions/BlockData
+          persist-credentials: false
+
+      - name: Check out PocketMine PHP setup helper
+        uses: actions/checkout@v7.0.1
+        with:
+          repository: pmmp/setup-php-action
+          ref: 3c38c259834f945351a662392836d90eb08abff0
+          path: .devtools-dependencies/setup-php-action
+          persist-credentials: false
+
+      - name: Set up PocketMine PHP on Node.js 24
+        shell: bash
+        env:
+          INPUT_PHP-VERSION: "8.1"
+          INPUT_PM-VERSION-MAJOR: "5"
+          INPUT_INSTALL-PATH: ./.php-bin
+        run: node "$GITHUB_WORKSPACE/.devtools-dependencies/setup-php-action/dist/index.js"
+
+      - name: Validate pinned BlockData metadata
+        run: composer validate --working-dir=virions/BlockData --strict --no-check-publish
+
+      - name: Lint plugin, virion, and verification sources
+        shell: bash
+        run: find src tools virions/BlockData/src -name '*.php' -print0 | xargs -0 -n1 php -l
+
+      - name: Build standalone PHAR with DevTools
+        id: build
+        uses: NhanAZ/DevTools@v0.1.0
+        with:
+          project: .
+          virions: virions
+          output: build
+
+      - name: Verify shaded BlockData library
+        env:
+          PHAR_PATH: ${{ steps.build.outputs.phar }}
+        run: php tools/verify-build.php "$PHAR_PATH"
+
+      - name: Upload PHAR from this commit
+        uses: actions/upload-artifact@v7.0.1
+        with:
+          name: ${{ steps.build.outputs.plugin-name }}-${{ github.sha }}
+          path: ${{ steps.build.outputs.phar }}
+          if-no-files-found: error
+          retention-days: 14
