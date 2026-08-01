@@ -23,7 +23,7 @@ The workflow at `.github/workflows/build.yml`:
 
 1. Checks out an exact BlockData commit into `virions/BlockData`.
 2. Sets up PocketMine PHP through the Node.js 24 compatible path.
-3. Runs `NhanAZ/DevTools@v0.1.0`.
+3. Runs `NhanAZ-Plugins/DevTools@v0.1.0`.
 4. Verifies the shaded BlockData classes and LGPL license inside the PHAR.
 5. Uploads exactly one downloadable artifact for 14 days.
 
