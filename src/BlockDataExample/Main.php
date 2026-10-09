@@ -23,20 +23,15 @@ class Main extends PluginBase implements Listener{
 	private array $inspectMode = [];
 
 	protected function onEnable() : void{
-		// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-		// Setup BlockData - only ONE LINE needed!
-		//
-		// autoCleanup: false = handle data removal yourself (see onBlockBreak)
-		// autoCleanup: true  = auto-remove when block is broken/exploded/burned
-		// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 		$this->blockData = BlockData::create($this, autoCleanup: false);
 
 		$this->getServer()->getPluginManager()->registerEvents($this, $this);
 	}
 
-	// ── On block place: save placer info ────────────────────
-
 	public function onBlockPlace(BlockPlaceEvent $event) : void{
+		if($event->isCancelled()){
+			return;
+		}
 		$player = $event->getPlayer();
 
 		foreach($event->getTransaction()->getBlocks() as [$x, $y, $z, $block]){
@@ -47,32 +42,33 @@ class Main extends PluginBase implements Listener{
 		}
 	}
 
-	// ── On block break: check ownership ─────────────────────
-
 	public function onBlockBreak(BlockBreakEvent $event) : void{
+		if($event->isCancelled()){
+			return;
+		}
 		$block = $event->getBlock();
 		$player = $event->getPlayer();
 		$data = $this->blockData->get($block);
 
 		if($data === null){
-			return; // No data on this block, allow breaking normally
+			return;
 		}
 
-		$owner = $data["owner"];
+		$owner = is_array($data) ? ($data["owner"] ?? null) : null;
+		if(!is_string($owner)){
+			$this->blockData->remove($block);
+			return;
+		}
 
-		// Only the owner can break this block
 		if($player->getName() !== $owner && !$player->hasPermission("blockdata.bypass")){
 			$player->sendMessage(TextFormat::RED . "This block belongs to " . TextFormat::WHITE . $owner . TextFormat::RED . "!");
 			$event->cancel();
 			return;
 		}
 
-		// Owner is breaking their own block - clean up data
 		$this->blockData->remove($block);
 		$player->sendMessage(TextFormat::GREEN . "Block data removed.");
 	}
-
-	// ── Right-click to inspect block info ───────────────────
 
 	public function onPlayerInteract(PlayerInteractEvent $event) : void{
 		if($event->getAction() !== PlayerInteractEvent::RIGHT_CLICK_BLOCK){
@@ -90,19 +86,22 @@ class Main extends PluginBase implements Listener{
 		if($data === null){
 			$player->sendMessage(TextFormat::GRAY . "This block has no data.");
 		}else{
-			$owner = $data["owner"];
-			$time = date("Y-m-d H:i:s", $data["placed_at"]);
-			$player->sendMessage(
-				TextFormat::AQUA . "=== Block Info ===\n" .
-				TextFormat::WHITE . "Owner: " . TextFormat::YELLOW . $owner . "\n" .
-				TextFormat::WHITE . "Placed at: " . TextFormat::YELLOW . $time
-			);
+			$owner = is_array($data) ? ($data["owner"] ?? null) : null;
+			$placedAt = is_array($data) ? ($data["placed_at"] ?? null) : null;
+			if(!is_string($owner) || !is_int($placedAt)){
+				$player->sendMessage(TextFormat::RED . "Stored block data has an invalid format.");
+			}else{
+				$time = date("Y-m-d H:i:s", $placedAt);
+				$player->sendMessage(
+					TextFormat::AQUA . "=== Block Info ===\n" .
+					TextFormat::WHITE . "Owner: " . TextFormat::YELLOW . $owner . "\n" .
+					TextFormat::WHITE . "Placed at: " . TextFormat::YELLOW . $time
+				);
+			}
 		}
 
 		$event->cancel();
 	}
-
-	// ── /inspect command to toggle inspect mode ─────────────
 
 	public function onCommand(CommandSender $sender, Command $command, string $label, array $args) : bool{
 		if(!$sender instanceof Player){

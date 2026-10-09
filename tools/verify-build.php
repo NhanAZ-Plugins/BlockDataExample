@@ -31,6 +31,7 @@ if(count($blockDataSourceRoots) !== 1){
 $blockDataSourceRoot = (string) array_key_first($blockDataSourceRoots);
 $requiredEntries = [
 	"plugin.yml",
+	"LICENSE",
 	"src/BlockDataExample/Main.php",
 	"{$blockDataSourceRoot}/BlockData.php",
 	"{$blockDataSourceRoot}/BlockDataListener.php",
@@ -43,12 +44,23 @@ foreach($requiredEntries as $entry){
 	}
 }
 
+$pluginLicense = file_get_contents($projectRoot . "/LICENSE");
+if($pluginLicense === false || $phar["LICENSE"]->getContent() !== $pluginLicense){
+	throw new RuntimeException("Build does not contain the exact plugin AGPL license text");
+}
+
+$virionSource = $argv[2] ?? ($projectRoot . "/virions/BlockData");
+$virionLicense = file_get_contents($virionSource . "/LICENSE");
+if($virionLicense === false || $phar["META-INF/virions/BlockData/LICENSE"]->getContent() !== $virionLicense){
+	throw new RuntimeException("Build does not contain the exact BlockData LGPL license text");
+}
+
 if(isset($phar["src/NhanAZ/BlockData/BlockData.php"])){
 	throw new RuntimeException("Build contains an unshaded BlockData source copy");
 }
 
 $pluginYml = $phar["plugin.yml"]->getContent();
-foreach(["version: 1.0.0", "  inspect:", "  blockdata.command.inspect:", "  blockdata.bypass:"] as $requiredManifestFragment){
+foreach(["version: 1.0.1", "  inspect:", "  blockdata.command.inspect:", "  blockdata.bypass:"] as $requiredManifestFragment){
 	if(!str_contains($pluginYml, $requiredManifestFragment)){
 		throw new RuntimeException("Built plugin manifest is missing: " . $requiredManifestFragment);
 	}

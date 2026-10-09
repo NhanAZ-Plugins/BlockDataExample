@@ -27,8 +27,16 @@ jobs:
         uses: actions/checkout@v7.0.1
         with:
           repository: NhanAZ-Libraries/BlockData
-          ref: f822980c2652026394e2a48829b4e13df1e4ded5
+          ref: 7df7273d462864e55a7cb59c5d1043378570f880
           path: virions/BlockData
+          persist-credentials: false
+
+      - name: Check out Axolotl-PM source for PHPStan
+        uses: actions/checkout@v7.0.1
+        with:
+          repository: axolotl-pm/PocketMine-MP
+          ref: dfe0d07e48a9e8d5a4a242fa43ff1cd3b743a955
+          path: .devtools-dependencies/axolotl-pm
           persist-credentials: false
 
       - name: Check out Axolotl-PM PHP setup helper
@@ -56,18 +64,20 @@ jobs:
 
       - name: Build standalone PHAR with DevTools
         id: build
-        uses: NhanAZ/DevTools@v1.0.0
+        uses: NhanAZ/DevTools@v1.0.1
         with:
           project: .
           virions: virions
           output: build
+          phpstan: max
+          phpstan-server: .devtools-dependencies/axolotl-pm
 
       - name: Verify shaded BlockData library
         env:
           PHAR_PATH: ${{ steps.build.outputs.phar }}
           BUILD_METADATA: ${{ steps.build.outputs.metadata }}
         run: |
-          php tools/verify-build.php "$PHAR_PATH"
+          php tools/verify-build.php "$PHAR_PATH" virions/BlockData
           cp "$BUILD_METADATA" build/devtools-build.json
 
       - name: Upload PHAR from this commit

@@ -1,91 +1,79 @@
 # BlockDataExample
 
-A small PocketMine-MP plugin showing how to use the [BlockData virion](https://github.com/NhanAZ-Libraries/BlockData) to attach persistent information to blocks.
+BlockDataExample is an Axolotl-PM plugin that demonstrates persistent block ownership with the BlockData virion.
 
-This is a demonstration plugin, not a complete protection system.
+[![Build](https://github.com/NhanAZ-Plugins/BlockDataExample/actions/workflows/build.yml/badge.svg)](https://github.com/NhanAZ-Plugins/BlockDataExample/actions/workflows/build.yml)
 
-## What it demonstrates
+## Overview
 
-- Saving the player name and placement time when a block is placed.
-- Allowing only the owner or a player with bypass permission to break that block.
-- Toggling inspection mode with `/inspect` and viewing stored block information.
-- Building one standalone PHAR with BlockData shaded by DevTools.
+The plugin records a block's owner and placement time, restricts breaking owned blocks, and lets players inspect stored data. It is a working example of the [BlockData library](https://github.com/NhanAZ-Libraries/BlockData), not a complete protection system.
 
-## Download a PHAR
+## Features
 
-Open the repository's [Actions page](https://github.com/NhanAZ-Plugins/BlockDataExample/actions/workflows/build.yml), select a successful run, and download its artifact. Extract the ZIP and copy `BlockDataExample.phar` to the production server's `plugins/` directory.
+- Save ownership data when a player places a block.
+- Allow the owner and players with bypass permission to break a recorded block.
+- Inspect ownership and placement time with `/inspect`.
+- Package a private shaded copy of BlockData into one PHAR.
 
-The PHAR already contains a private shaded copy of BlockData. A production server does not need DevTools or a separate BlockData installation.
+## Requirements and compatibility
 
-## Build on every commit
+- Axolotl-PM 5.49.1 is the pinned CI and server smoke target. The plugin manifest declares the 5 API family.
+- PHP 8.1 or newer with the extensions required by Axolotl-PM, including LevelDB and JSON.
+- [BlockData 1.0.1](https://github.com/NhanAZ-Libraries/BlockData/releases/tag/v1.0.1) is pinned in the build workflow. The production PHAR contains the library.
 
-The workflow at `.github/workflows/build.yml`:
+Earlier Axolotl-PM 5.x releases and in-game behavior without a Minecraft client have not been independently verified.
 
-1. Checks out an exact BlockData commit into `virions/BlockData`.
-2. Sets up PocketMine PHP through the Node.js 24 compatible path.
-3. Runs DevTools release `v1.0.0` through its composite Action.
-4. Verifies the shaded BlockData classes and LGPL license inside the PHAR.
-5. Uploads exactly one downloadable artifact for 14 days, containing the PHAR and `devtools-build.json` with its SHA-256 and dependency metadata.
+## Installation
 
-PHPStan is off because the workflow intentionally omits the `phpstan` input.
+Download the PHAR artifact from a successful [build workflow run](https://github.com/NhanAZ-Plugins/BlockDataExample/actions/workflows/build.yml). Extract the ZIP and copy `BlockDataExample.phar` into the server's `plugins/` directory. Restart the server. DevTools and a separate BlockData installation are not needed on the production server.
 
-The dependency declaration is kept in `devtools.yml`:
+The artifact includes `devtools-build.json` with the exact PHAR SHA-256. Compare the hash before deployment.
 
-```yaml
-virions:
-  - name: BlockData
-    version: ^1.0.0
-```
+## Usage
 
-## Local development with DevTools
+When a player places a block, the plugin stores the player's name and a Unix timestamp. Only that player or someone with `blockdata.bypass` may break the recorded block. A break by the owner removes its data.
 
-Install the DevTools release PHAR and use this layout:
+Run `/inspect`, then right-click a block to view its stored owner and placement time. Run `/inspect` again to turn inspection off. The command is available to players with `blockdata.command.inspect`.
+
+This example expects ownership records with a string `owner` and integer `placed_at`. Invalid records are reported during inspection. An invalid record is removed when its block is broken.
+
+## Commands and permissions
+
+| Name | Default | Purpose |
+| --- | --- | --- |
+| `/inspect` | Everyone | Toggle inspection mode. |
+| `blockdata.command.inspect` | Everyone | Allow use of `/inspect`. |
+| `blockdata.bypass` | Operator | Allow breaking another player's recorded block. |
+
+There is no configuration file. The plugin stores data under its data folder through BlockData.
+
+## Building with DevTools
+
+The [workflow](.github/workflows/build.yml) checks out BlockData at a fixed source commit, validates its manifest, runs PHPStan level max against pinned Axolotl-PM source, and builds with [DevTools 1.0.1](https://github.com/NhanAZ/DevTools/releases/tag/v1.0.1). A verification script checks the PHAR manifest, shaded classes, and the BlockData LGPL license text before upload.
+
+For local folder development, place the official DevTools PHAR in the server's `plugins/` directory. Put BlockData source in `virions/BlockData` next to this project. Then run:
 
 ```text
-server/
-|- plugins/
-|  |- DevTools.phar
-|  `- BlockDataExample/
-|- virions/
-|  `- BlockData/
-`- build/
-```
-
-Restart the server, then run:
-
-```text
-/devtools virions
 /devtools doctor BlockDataExample
 /devtools build BlockDataExample
 ```
 
-The result is `build/BlockDataExample.phar`.
+The result is `build/BlockDataExample.phar`. The source dependency declaration is in [`devtools.yml`](devtools.yml).
 
-## Usage
+## Development and testing
 
-Place a block to save its owner and placement time. Run `/inspect`, then right-click a block to display its saved data. Run `/inspect` again to disable inspection mode.
+The PHP source and verifier can be checked locally with:
 
-Only the recorded owner may break a tracked block unless the player has `blockdata.bypass`.
-
-## Permissions
-
-| Permission | Default | Purpose |
-| --- | --- | --- |
-| `blockdata.command.inspect` | Everyone | Use `/inspect`. |
-| `blockdata.bypass` | Operator | Break blocks owned by another player. |
-
-## Source integration
-
-The complete integration is in `src/BlockDataExample/Main.php`. The essential setup is:
-
-```php
-use NhanAZ\BlockData\BlockData;
-
-protected function onEnable() : void{
-    $this->blockData = BlockData::create($this, autoCleanup: false);
-}
+```sh
+php -l src/BlockDataExample/Main.php
+php -l tools/verify-build.php
+php tools/verify-build.php build/BlockDataExample.phar virions/BlockData
 ```
 
-See the [BlockData documentation](https://github.com/NhanAZ-Libraries/BlockData) for the complete API.
+The build workflow additionally runs PHPStan level max and validates the PHAR. A clean server boot checks that the built plugin loads, while block placement and inspection still require an in-game test. See the [changelog](CHANGELOG.md) for update and rollback notes.
 
-DevTools officially launches on 2026-10-10 as a consolidated, signed `v1.0.0`. Refresh cached prelaunch tags/checkouts and old SHA pins. Earlier downloaded PHARs remain their original bytes; keep a local working copy for rollback. The launch [rollout guide](https://github.com/NhanAZ/DevTools/blob/v1.0.0/docs/org-rollout.md) explains the new source identity.
+## License, credits, and support
+
+Copyright 2026 NhanAZ. BlockDataExample is licensed under [AGPL-3.0-only](LICENSE). The bundled BlockData virion retains its separate [LGPL-3.0-or-later license](https://github.com/NhanAZ-Libraries/BlockData/blob/master/LICENSE), which the PHAR includes.
+
+Report defects in [GitHub Issues](https://github.com/NhanAZ-Plugins/BlockDataExample/issues). Community support is available through [NhanAZ Discord](https://discord.gg/j2X83ujT6c).
