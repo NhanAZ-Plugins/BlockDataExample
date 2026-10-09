@@ -23,7 +23,7 @@ The workflow at `.github/workflows/build.yml`:
 
 1. Checks out an exact BlockData commit into `virions/BlockData`.
 2. Sets up PocketMine PHP through the Node.js 24 compatible path.
-3. Runs DevTools release `v2.0.0` through its composite Action.
+3. Runs DevTools release `v1.0.0` through its composite Action.
 4. Verifies the shaded BlockData classes and LGPL license inside the PHAR.
 5. Uploads exactly one downloadable artifact for 14 days, containing the PHAR and `devtools-build.json` with its SHA-256 and dependency metadata.
 
@@ -87,3 +87,5 @@ protected function onEnable() : void{
 ```
 
 See the [BlockData documentation](https://github.com/NhanAZ-Libraries/BlockData) for the complete API.
+
+DevTools officially launches on 2026-10-10 as a consolidated, signed `v1.0.0`. Refresh cached prelaunch tags/checkouts and old SHA pins. Earlier downloaded PHARs remain their original bytes; keep a local working copy for rollback. The launch [rollout guide](https://github.com/NhanAZ/DevTools/blob/v1.0.0/docs/org-rollout.md) explains the new source identity.
