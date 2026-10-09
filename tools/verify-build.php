@@ -45,14 +45,15 @@ foreach($requiredEntries as $entry){
 }
 
 $pluginLicense = file_get_contents($projectRoot . "/LICENSE");
-if($pluginLicense === false || $phar["LICENSE"]->getContent() !== $pluginLicense){
-	throw new RuntimeException("Build does not contain the exact plugin AGPL license text");
+$normalizeNewlines = static fn(string $text) : string => str_replace(["\r\n", "\r"], "\n", $text);
+if($pluginLicense === false || $normalizeNewlines($phar["LICENSE"]->getContent()) !== $normalizeNewlines($pluginLicense)){
+	throw new RuntimeException("Build does not contain the plugin AGPL license text");
 }
 
 $virionSource = $argv[2] ?? ($projectRoot . "/virions/BlockData");
 $virionLicense = file_get_contents($virionSource . "/LICENSE");
-if($virionLicense === false || $phar["META-INF/virions/BlockData/LICENSE"]->getContent() !== $virionLicense){
-	throw new RuntimeException("Build does not contain the exact BlockData LGPL license text");
+if($virionLicense === false || $normalizeNewlines($phar["META-INF/virions/BlockData/LICENSE"]->getContent()) !== $normalizeNewlines($virionLicense)){
+	throw new RuntimeException("Build does not contain the BlockData LGPL license text");
 }
 
 if(isset($phar["src/NhanAZ/BlockData/BlockData.php"])){

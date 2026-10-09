@@ -49,7 +49,7 @@ There is no configuration file. The plugin stores data under its data folder thr
 
 ## Building with DevTools
 
-The [workflow](.github/workflows/build.yml) checks out BlockData at a fixed source commit, validates its manifest, runs PHPStan level max against pinned Axolotl-PM source, and builds with [DevTools 1.0.1](https://github.com/NhanAZ/DevTools/releases/tag/v1.0.1). A verification script checks the PHAR manifest, shaded classes, and the BlockData LGPL license text before upload.
+The [workflow](.github/workflows/build.yml) checks out BlockData at a fixed source commit, validates its manifest, runs PHPStan level max against pinned Axolotl-PM source, and builds with [DevTools 1.0.1](https://github.com/NhanAZ/DevTools/releases/tag/v1.0.1). A verification script checks the PHAR manifest, shaded classes, and both license texts before upload. It treats LF and CRLF as equivalent when comparing legal text across operating systems.
 
 For local folder development, place the official DevTools PHAR in the server's `plugins/` directory. Put BlockData source in `virions/BlockData` next to this project. Then run:
 
