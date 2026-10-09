@@ -8,4 +8,6 @@
 - Skip canceled placement and break events to avoid stale or unintended data changes.
 - Add the AGPL-3.0-only license for this plugin's source and include its text in the PHAR. BlockData keeps its LGPL license.
 
+The initial repository revision carried GPL-3.0 license text. That historical grant remains available through Git history. The current plugin source has only NhanAZ as a human contributor in the repository history.
+
 There is no intentional change to the stored record format or command permissions. To roll back, restore the previous plugin PHAR and retain a backup of the plugin's data folder. Data written by BlockData 1.0.1 uses the same LevelDB key format.

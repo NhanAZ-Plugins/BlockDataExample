@@ -74,6 +74,6 @@ The build workflow additionally runs PHPStan level max and validates the PHAR. A
 
 ## License, credits, and support
 
-Copyright 2026 NhanAZ. BlockDataExample is licensed under [AGPL-3.0-only](LICENSE). The bundled BlockData virion retains its separate [LGPL-3.0-or-later license](https://github.com/NhanAZ-Libraries/BlockData/blob/master/LICENSE), which the PHAR includes.
+Copyright 2023-2026 NhanAZ. BlockDataExample 1.0.1 is licensed under [AGPL-3.0-only](LICENSE). Earlier source revisions carried GPL-3.0 license text and remain available in repository history. The bundled BlockData virion retains its separate [LGPL-3.0-or-later license](https://github.com/NhanAZ-Libraries/BlockData/blob/master/LICENSE), which the PHAR includes.
 
 Report defects in [GitHub Issues](https://github.com/NhanAZ-Plugins/BlockDataExample/issues). Community support is available through [NhanAZ Discord](https://discord.gg/j2X83ujT6c).
