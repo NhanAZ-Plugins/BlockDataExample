@@ -23,7 +23,7 @@ The workflow at `.github/workflows/build.yml`:
 
 1. Checks out an exact BlockData commit into `virions/BlockData`.
 2. Sets up PocketMine PHP through the Node.js 24 compatible path.
-3. Runs DevTools candidate commit `324e08681d7503afef223e4f82cc5d5fdef65dda` through its composite Action.
+3. Runs DevTools candidate commit `b79fba11584ac0f61145b2fbac42420072c131b0` through its composite Action.
 4. Verifies the shaded BlockData classes and LGPL license inside the PHAR.
 5. Uploads exactly one downloadable artifact for 14 days, containing the PHAR and `devtools-build.json` with its SHA-256 and dependency metadata.
 
