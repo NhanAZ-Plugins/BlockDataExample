@@ -25,9 +25,9 @@ Earlier Axolotl-PM 5.x releases and in-game behavior without a Minecraft client 
 
 ## Installation
 
-Download the PHAR artifact from a successful [build workflow run](https://github.com/NhanAZ-Plugins/BlockDataExample/actions/workflows/build.yml). Extract the ZIP and copy `BlockDataExample.phar` into the server's `plugins/` directory. Restart the server. DevTools and a separate BlockData installation are not needed on the production server.
+Download `BlockDataExample.phar` and `SHA256SUMS.txt` from the [v1.0.1 release](https://github.com/NhanAZ-Plugins/BlockDataExample/releases/tag/v1.0.1). Copy the PHAR into the server's `plugins/` directory and restart the server. DevTools and a separate BlockData installation are not needed on the production server.
 
-The artifact includes `devtools-build.json` with the exact PHAR SHA-256. Compare the hash before deployment.
+The release includes `devtools-build.json` and the exact PHAR SHA-256. Compare the hash before deployment. The same build is available from its successful [workflow run](https://github.com/NhanAZ-Plugins/BlockDataExample/actions/runs/37992281547).
 
 ## Usage
 
