@@ -17,11 +17,11 @@ The plugin records a block's owner and placement time, restricts breaking owned 
 
 ## Requirements and compatibility
 
-- Axolotl-PM 5.49.1 is the pinned CI and server smoke target. The plugin manifest declares the 5 API family.
+- The plugin declares Axolotl-PM API 5.0.0. The exact server revision tested by CI and server smoke is recorded in the [build workflow](.github/workflows/build.yml) and linked run below.
 - PHP 8.1 or newer with the extensions required by Axolotl-PM, including LevelDB and JSON.
 - [BlockData 1.0.1](https://github.com/NhanAZ-Libraries/BlockData/releases/tag/v1.0.1) is pinned in the build workflow. The production PHAR contains the library.
 
-Earlier Axolotl-PM 5.x releases and in-game behavior without a Minecraft client have not been independently verified.
+The minimum server patch release and compatibility across all Axolotl-PM 5.x releases have not been independently verified. In-game behavior also remains unverified without a Minecraft client.
 
 ## Installation
 
