@@ -8,10 +8,6 @@ Example Axolotl-PM plugin for persistent block ownership with BlockData
 [![Discord](https://img.shields.io/discord/986553214889517088?label=Discord&logo=discord&logoColor=white&color=5865F2)](https://discord.gg/j2X83ujT6c)
 
 
-## Overview
-
-The plugin records a block's owner and placement time, restricts breaking owned blocks, and lets players inspect stored data. It is a working example of the [BlockData library](https://github.com/NhanAZ-Libraries/BlockData), not a complete protection system.
-
 ## Features
 
 - Save ownership data when a player places a block.
