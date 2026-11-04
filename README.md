@@ -1,8 +1,15 @@
 # BlockDataExample
 
-BlockDataExample is an Axolotl-PM plugin that demonstrates persistent block ownership with the BlockData virion.
+Example Axolotl-PM plugin for persistent block ownership with BlockData
 
-[![Build](https://github.com/NhanAZ-Plugins/BlockDataExample/actions/workflows/build.yml/badge.svg)](https://github.com/NhanAZ-Plugins/BlockDataExample/actions/workflows/build.yml)
+[![CI](https://github.com/NhanAZ-Plugins/BlockDataExample/actions/workflows/build.yml/badge.svg)](https://github.com/NhanAZ-Plugins/BlockDataExample/actions/workflows/build.yml)
+[![Latest release](https://img.shields.io/github/v/release/NhanAZ-Plugins/BlockDataExample)](https://github.com/NhanAZ-Plugins/BlockDataExample/releases/latest)
+[![License](https://img.shields.io/github/license/NhanAZ-Plugins/BlockDataExample)](https://github.com/NhanAZ-Plugins/BlockDataExample/blob/master/LICENSE)
+[![Discord](https://img.shields.io/discord/986553214889517088?label=Discord&logo=discord&logoColor=white&color=5865F2)](https://discord.gg/j2X83ujT6c)
+
+## Overview
+
+This example targets the PocketMine-MP and Axolotl-PM API 5 ecosystem and is maintained under [NhanAZ-Plugins](https://github.com/NhanAZ-Plugins).
 
 ## Overview
 
