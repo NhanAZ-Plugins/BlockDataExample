@@ -64,7 +64,7 @@ jobs:
 
       - name: Build standalone PHAR with DevTools
         id: build
-        uses: AxolotlBucketLabs/DevTools@v3 # v3.0.0
+        uses: AxolotlBucketLabs/DevTools@latest
         with:
           project: .
           virions: virions
